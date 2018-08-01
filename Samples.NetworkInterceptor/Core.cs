@@ -92,7 +92,8 @@ namespace Samples.NetworkInterceptor
                 //Exclude Https addresses you don't want to proxy
                 //Useful for clients that use certificate pinning
                 //for example dropbox.com
-                e.DecryptSsl = false;
+
+                await Task.Run(() => { e.DecryptSsl = false; });
             }
         }
 
@@ -101,13 +102,23 @@ namespace Samples.NetworkInterceptor
             if (e.WebSession.Request.RequestUri.AbsoluteUri.Contains("baidu.com"))
             {
                 string bodyString = await e.GetRequestBodyAsString();
-                string msg = $"网址:{e.WebSession.Request.Url}" +
-                             $"\r\n协议：{(e.WebSession.IsHttps ? "Https" : "http")}" +
-                             $"\r\nMethod：{e.WebSession.Request.Method}" +
-                             $"\r\n PostData：{bodyString}";
-                Console.WriteLine(msg);
+                await Task.Run(() =>
+                {
+                    string msg = $"网址:{e.WebSession.Request.Url}" +
+                                 $"\r\n协议：{(e.WebSession.IsHttps ? "Https" : "http")}" +
+                                 $"\r\nMethod：{e.WebSession.Request.Method}" +
+                                 $"\r\n PostData：{bodyString}\r\n\r\n";
+                    Console.WriteLine(msg);
+                });
             }
-          
+            else
+            {
+                await Task.Run(() =>
+                {
+                    string msg = $"网址:{e.WebSession.Request.Url}";
+                    Console.WriteLine(msg);
+                });
+            }
 
             //////read request headers
             //var requestHeaders = e.WebSession.Request.Headers;
